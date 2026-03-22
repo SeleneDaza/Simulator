@@ -52,56 +52,56 @@ function App() {
   };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" />
-        </a>
-
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" />
-        </a>
-      </div>
-
-      <h1>MLFQ Simulator</h1>
-
-      <div className="card">
-
-        <button onClick={runMLFQ}>
-          Ejecutar MLFQ
-        </button>
-
-      </div>
-
-      {result && (
-
+      <>
         <div>
+          <a href="https://vite.dev" target="_blank">
+            <img src={viteLogo} className="logo" />
+          </a>
 
-          <h2>Timeline</h2>
+          <a href="https://react.dev" target="_blank">
+            <img src={reactLogo} className="logo react" />
+          </a>
+        </div>
 
-          {result.timeline.map((t, i) => (
+        <h1>MLFQ Simulator</h1>
 
-            <div key={i}>
+        <div className="card">
 
-              {t.pid} | {t.start} - {t.end} | Q{t.queue}
-
-            </div>
-
-          ))}
-
-          <h2>Stats</h2>
-
-          <div>CPU: {result.stats.cpuUtilization}</div>
-          <div>Throughput: {result.stats.throughput}</div>
-          <div>Response: {result.stats.avgResponse}</div>
-          <div>Turnaround: {result.stats.avgTurnaround}</div>
-          <div>Waiting: {result.stats.avgWaiting}</div>
+          <button onClick={runMLFQ}>
+            Ejecutar MLFQ
+          </button>
 
         </div>
 
-      )}
+        {result && (
 
-    </>
+            <div>
+
+              <h2>Timeline</h2>
+
+              {result.timeline.map((t, i) => (
+
+                  <div key={i}>
+
+                    {t.pid} | {t.start} - {t.end} | Q{t.queue}
+
+                  </div>
+
+              ))}
+
+              <h2>Stats</h2>
+
+              <div>CPU: {result.stats.cpuUtilization}</div>
+              <div>Throughput: {result.stats.throughput}</div>
+              <div>Response: {result.stats.avgResponse}</div>
+              <div>Turnaround: {result.stats.avgTurnaround}</div>
+              <div>Waiting: {result.stats.avgWaiting}</div>
+
+            </div>
+
+        )}
+
+      </>
   );
 }
 

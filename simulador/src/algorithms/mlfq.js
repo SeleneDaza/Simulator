@@ -1,177 +1,99 @@
-const quantums = [5, 10, 20];
 
-export default function mlfq(processes) {
+export const mlfqTick = (state, clock, quantums = [5, 10, 20], boostInterval = 50) => {
+    const { queues, completed, ioList } = state;
 
-    let time = 0;
+    if (clock > 0 && clock % boostInterval === 0) {
+        [...queues[1], ...queues[2]].forEach(p => p.quantumUsed = 0);
 
-    let queues = [[], [], []];
+        queues[0].push(...queues[1]);
+        queues[0].push(...queues[2]);
+        queues[1] = [];
+        queues[2] = [];
 
-    let timeline = [];
-
-    let procs = [...processes].sort(
-        (a, b) => a.arrivalTime - b.arrivalTime
-    );
-
-    let index = 0;
-
-    while (
-        index < procs.length ||
-        queues.some(q => q.length > 0)
-    ) {
-
-        // agregar procesos que llegaron
-        while (
-            index < procs.length &&
-            procs[index].arrivalTime <= time
-        ) {
-            queues[0].push(procs[index]);
-            index++;
+        if (state.running) {
+            state.running.queueLevel = 0;
+            state.running.quantumUsed = 0;
         }
+    }
 
-        let qIndex = queues.findIndex(
-            q => q.length > 0
-        );
-
-        if (qIndex === -1) {
-            time++;
-            continue;
+    for (let i = ioList.length - 1; i >= 0; i--) {
+        const process = ioList[i];
+        process.ioRemaining--;
+        if (process.ioRemaining <= 0) {
+            process.state = 'READY';
+            process.queueLevel = 0;
+            process.quantumUsed = 0;
+            queues[0].push(process);
+            ioList.splice(i, 1);
         }
+    }
 
-        let p = queues[qIndex].shift();
+    if (state.running) {
+        const proc = state.running;
+        const executedTime = proc.burstTime - proc.remainingTime;
 
-        let quantum = quantums[qIndex];
+        const isFinished = proc.remainingTime <= 0;
+        const shouldBlock = proc.ioRequestTime !== null && !proc.hasDoneIO && executedTime >= proc.ioRequestTime;
 
-        let used = 0;
+        const qLevel = proc.queueLevel !== undefined ? proc.queueLevel : 0;
+        const currentQuantum = quantums[qLevel];
+        const isQuantumExpired = proc.quantumUsed >= currentQuantum;
 
-        if (p.startTime === null) {
-            p.startTime = time;
-        }
-
-        p.state = "RUNNING";
-
-        let startTime = time;
-
-        // permitir preempción
-        while (
-            used < quantum &&
-            p.remainingTime > 0
-        ) {
-
-            time++;
-            used++;
-            p.remainingTime--;
-            p.quantumUsed++;
-
-            // agregar nuevos procesos
-            while (
-                index < procs.length &&
-                procs[index].arrivalTime <= time
-            ) {
-                queues[0].push(procs[index]);
-                index++;
-            }
-
-            //PREEMPCIÓN
-            let higher = queues.findIndex(
-                (q, i) =>
-                    i < qIndex && q.length > 0
-            );
-
-            if (higher !== -1) {
+        let isPreempted = false;
+        for (let i = 0; i < qLevel; i++) {
+            if (queues[i].length > 0) {
+                isPreempted = true;
                 break;
             }
         }
 
-        timeline.push({
-            pid: p.pid,
-            start: startTime,
-            end: time,
-            queue: qIndex,
-            color: p.color
-        });
+        if (isFinished) {
+            proc.state = 'COMPLETED';
+            proc.completionTime = clock;
+            completed.push(proc);
+            state.running = null;
+        } else if (shouldBlock) {
+            proc.state = 'WAITING';
+            proc.hasDoneIO = true;
+            ioList.push(proc);
+            state.running = null;
+        } else if (isQuantumExpired) {
 
-        if (p.remainingTime > 0) {
+            proc.state = 'READY';
+            proc.quantumUsed = 0;
+            proc.queueLevel = Math.min(2, qLevel + 1);
+            queues[proc.queueLevel].push(proc);
+            state.running = null;
+        } else if (isPreempted) {
 
-            p.state = "READY";
-
-            // baja prioridad si termino quantum
-            if (used >= quantum) {
-
-                if (qIndex < 2) {
-                    queues[qIndex + 1].push(p);
-                } else {
-                    queues[2].push(p);
-                }
-
-            } else {
-                // preempción → misma cola
-                queues[qIndex].push(p);
-            }
-
-        } else {
-
-            p.state = "COMPLETED";
-            p.completionTime = time;
-
+            proc.state = 'READY';
+            queues[qLevel].push(proc);
+            state.running = null;
         }
     }
 
-    // ---------- stats ----------
-
-    let totalBurst = processes.reduce(
-        (a, p) => a + p.burstTime,
-        0
-    );
-
-    let cpuUtilization = totalBurst / time;
-
-    let throughput =
-        processes.length / time;
-
-    let avgResponse =
-        processes.reduce(
-            (a, p) =>
-                a +
-                (p.startTime -
-                    p.arrivalTime),
-            0
-        ) / processes.length;
-
-    let avgTurnaround =
-        processes.reduce(
-            (a, p) =>
-                a +
-                (p.completionTime -
-                    p.arrivalTime),
-            0
-        ) / processes.length;
-
-    let avgWaiting =
-        processes.reduce(
-            (a, p) =>
-                a +
-                (p.completionTime -
-                    p.arrivalTime -
-                    p.burstTime),
-            0
-        ) / processes.length;
-
-    let fairness =
-        processes.map(
-            p => p.quantumUsed / time
-        );
-
-    return {
-        timeline,
-        queues,
-        totalTime: time,
-        stats: {
-            cpuUtilization,
-            throughput,
-            avgResponse,
-            avgTurnaround,
-            avgWaiting,
-            fairness
+    if (!state.running) {
+        for (let i = 0; i < queues.length; i++) {
+            if (queues[i].length > 0) {
+                const next = queues[i].shift();
+                state.running = next;
+                next.state = 'RUNNING';
+                next.queueLevel = i;
+                if (next.startTime === null) next.startTime = clock;
+                break;
+            }
         }
-    };
-}
+    }
+
+    if (state.running) {
+        const proc = state.running;
+        proc.remainingTime--;
+        proc.quantumUsed++;
+    }
+
+    queues.forEach(queue => {
+        queue.forEach(p => p.waitingTime++);
+    });
+
+    return state;
+};
