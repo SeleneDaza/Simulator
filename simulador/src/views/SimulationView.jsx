@@ -34,9 +34,9 @@ const QueueBadge = ({ pid, processes }) => {
 };
 
 const GanttChart = ({ timeline, processes }) => {
-    if (timeline.length === 0) return <div style={{ color: '#888' }}>Esperando ejecución...</div>;
+    if (timeline.length === 0) return <div style={{ color: '#888' }}>Waiting ejecution...</div>;
     const totalTime = timeline[timeline.length - 1].end;
-    if (totalTime === 0) return <div style={{ color: '#888' }}>Sin datos...</div>;
+    if (totalTime === 0) return <div style={{ color: '#888' }}>No data found...</div>;
 
     return (
         <div style={{ position: 'relative', width: '100%', marginBottom: '25px' }}>
@@ -140,7 +140,7 @@ const SimulationView = ({
                 backgroundColor: '#0f1630'
             }}>
                 <div>
-                    <h2 style={{ marginBottom: '10px' }}>Simulación</h2>
+                    <h2 style={{ marginBottom: '10px' }}>Simulation</h2>
 
                     <img
                         src="/robot.png"
@@ -164,7 +164,7 @@ const SimulationView = ({
                             cursor: 'pointer'
                         }}
                     >
-                        {isPlaying ? "⏸ Pausar" : "▶️ Reproducir"}
+                        {isPlaying ? "⏸ PAUSE" : "▶️ START"}
                     </button>
 
                     <button
@@ -180,7 +180,7 @@ const SimulationView = ({
                             border: 'none'
                         }}
                     >
-                        Finalizar
+                        FINISH
                     </button>
                 </div>
 
