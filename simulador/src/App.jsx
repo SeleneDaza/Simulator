@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
-// Importaciones del motor
 import { vrrTick } from "./algorithms/roundRobin";
 import { mlfqTick } from "./algorithms/mlfq";
 import { srtfTick } from "./algorithms/srtf";
 import { Process } from "./models/Process";
-import { calculateStats } from "./algorithms/calculateStats"; // Importamos la matemática desde la capa lógica
+import { calculateStats } from "./algorithms/calculateStats"; 
 
-// Importaciones de la 3 paginas
 import ConfigView from './views/ConfigView.jsx';
 import SimulationView from './views/SimulationView.jsx';
 import ResultsView from './views/ResultsView.jsx';
@@ -24,7 +22,6 @@ const App = () => {
   const pendingMLFQ = useRef([]);
   const pendingSRTF = useRef([]);
 
-  // Agregamos un campo "stats" a las referencias para que el algoritmo guarde sus resultados ahí
   const simVRR = useRef({ readyQueue: [], auxQueue: [], ioList: [], running: null, completed: [], timeline: [], stats: null });
   const simMLFQ = useRef({ queues: [[], [], []], ioList: [], running: null, completed: [], timeline: [], stats: null });
   const simSRTF = useRef({ readyQueue: [], ioList: [], running: null, completed: [], timeline: [], stats: null });
@@ -33,26 +30,23 @@ const App = () => {
   const [mlfqResult, setMlfqResult] = useState(simMLFQ.current);
   const [srtfResult, setSrtfResult] = useState(simSRTF.current);
 
-  // Bucle de Simulación
   useEffect(() => {
     let timer;
     if (isPlaying && currentView === 'SIMULATION') {
       timer = setInterval(() => {
-        // Lógica de VRR
+
         const arrVRR = pendingVRR.current.filter(p => p.arrivalTime === clock);
         pendingVRR.current = pendingVRR.current.filter(p => p.arrivalTime > clock);
         arrVRR.forEach(p => simVRR.current.readyQueue.push(p));
         vrrTick(simVRR.current, clock, quantum);
         simVRR.current.timeline.push(simVRR.current.running ? simVRR.current.running.pid : "IDLE");
 
-        // Lógica de MLFQ
         const arrMLFQ = pendingMLFQ.current.filter(p => p.arrivalTime === clock);
         pendingMLFQ.current = pendingMLFQ.current.filter(p => p.arrivalTime > clock);
         arrMLFQ.forEach(p => simMLFQ.current.queues[0].push(p));
         mlfqTick(simMLFQ.current, clock);
         simMLFQ.current.timeline.push(simMLFQ.current.running ? simMLFQ.current.running.pid : "IDLE");
 
-        // Lógica de SRTF
         const arrSRTF = pendingSRTF.current.filter(p => p.arrivalTime === clock);
         pendingSRTF.current = pendingSRTF.current.filter(p => p.arrivalTime > clock);
         arrSRTF.forEach(p => simSRTF.current.readyQueue.push(p));
@@ -68,7 +62,6 @@ const App = () => {
     return () => clearInterval(timer);
   }, [isPlaying, clock, currentView, quantum]);
 
-  // Funciones puente
   const handleStartSimulation = () => {
     if (processes.length === 0) return alert("Agrega procesos.");
     const getInitial = () => processes.map(p => {
@@ -78,19 +71,17 @@ const App = () => {
     });
     pendingVRR.current = getInitial(); pendingMLFQ.current = getInitial(); pendingSRTF.current = getInitial();
 
-    // 1. Iniciamos la reproducción automáticamente
     setIsPlaying(true);
     setCurrentView('SIMULATION');
   };
 
   const handleFinishSimulation = () => {
     setIsPlaying(false);
-    // AQUÍ DELEGAMOS EL CÁLCULO A LA CAPA LÓGICA ANTES DE RENDERIZAR LA VISTA
+
     simVRR.current.stats = calculateStats(simVRR.current.timeline, processes);
     simMLFQ.current.stats = calculateStats(simMLFQ.current.timeline, processes);
     simSRTF.current.stats = calculateStats(simSRTF.current.timeline, processes);
 
-    // Actualizamos el estado para que la vista 3 reciba los datos ya procesados
     setVrrResult({ ...simVRR.current });
     setMlfqResult({ ...simMLFQ.current });
     setSrtfResult({ ...simSRTF.current });
@@ -98,7 +89,6 @@ const App = () => {
     setCurrentView('RESULTS');
   };
 
-  // Renderizado Condicional Limpio
   return (
       <>
         {currentView === 'CONFIG' && (

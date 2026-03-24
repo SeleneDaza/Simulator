@@ -1,4 +1,3 @@
-
 export const mlfqTick = (state, clock, quantums = [5, 10, 20], boostInterval = 50) => {
     const { queues, completed, ioList } = state;
 

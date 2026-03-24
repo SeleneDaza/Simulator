@@ -11,15 +11,12 @@ const ResultsView = ({ statsVRR, statsMLFQ, statsSRTF }) => {
     const sortedAlgorithms = [...algorithms].sort((a, b) => parseFloat(a.avgWait) - parseFloat(b.avgWait));
     sortedAlgorithms.forEach((alg, index) => { alg.rank = index + 1; });
 
-    // En el Dashboard: [2do Lugar] [Gráfico Radar] [1er Lugar] [3er Lugar]
-    // Pero para mantener simetría visual usaremos un Flexbox equilibrado
     const maxWait = Math.max(...algorithms.map(a => parseFloat(a.avgWait))) || 1;
     const maxTurnaround = Math.max(...algorithms.map(a => parseFloat(a.avgTurnaround))) || 1;
     const maxResponse = Math.max(...algorithms.map(a => parseFloat(a.avgResponse))) || 1;
     const maxCPU = Math.max(...algorithms.map(a => parseFloat(a.cpuUtil))) || 1;
     const maxThrough = Math.max(...algorithms.map(a => parseFloat(a.throughput))) || 1;
 
-    // --- LÓGICA DEL RADAR SVG ---
     const labels = ["Wait", "Resp", "Turn", "CPU", "Thr"];
     const centerX = 100, centerY = 100, radius = 70;
     
@@ -32,17 +29,14 @@ const ResultsView = ({ statsVRR, statsMLFQ, statsSRTF }) => {
     const renderRadar = () => (
         <div style={{ width: '350px', height: '350px', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="100%" height="100%" viewBox="0 0 200 200">
-                {/* Telaraña de fondo */}
                 {[0.2, 0.4, 0.6, 0.8, 1].map(f => (
                     <polygon key={f} points={labels.map((_, i) => getPoint(f, 1, i, labels.length)).join(' ')} 
                     fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
                 ))}
-                {/* Ejes */}
                 {labels.map((_, i) => (
                     <line key={i} x1={centerX} y1={centerY} x2={getPoint(1, 1, i, labels.length).split(',')[0]} 
                     y2={getPoint(1, 1, i, labels.length).split(',')[1]} stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
                 ))}
-                {/* Polígonos de Algoritmos */}
                 {algorithms.map(alg => {
                     const pts = [
                         getPoint(alg.avgWait, maxWait, 0, 5),
@@ -54,7 +48,6 @@ const ResultsView = ({ statsVRR, statsMLFQ, statsSRTF }) => {
                     return <polygon key={alg.name} points={pts} fill={`${alg.color}33`} stroke={alg.color} strokeWidth="2" />;
                 })}
             </svg>
-            {/* Etiquetas flotantes */}
             {labels.map((l, i) => {
                 const pos = getPoint(1.2, 1, i, labels.length).split(',');
                 return <span key={l} style={{ position: 'absolute', left: `${pos[0]/2}%`, top: `${pos[1]/2}%`, fontSize: '0.6rem', color: '#94a3b8', transform: 'translate(-50%, -50%)' }}>{l}</span>;
@@ -103,8 +96,6 @@ const ResultsView = ({ statsVRR, statsMLFQ, statsSRTF }) => {
         );
     };
 
-    // ... (mantenemos la lógica de safeStats y sortedAlgorithms)
-
 return (
     <div style={{ 
         width: '100vw', height: '100vh', 
@@ -112,28 +103,23 @@ return (
         padding: '20px 50px', boxSizing: 'border-box',
         overflow: 'hidden' 
     }}>
-        {/* HEADER COMPACTO */}
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '15px' }}>
             <h1 style={{ fontSize: '1.2rem', fontWeight: '1000', margin: 0 }}>RESULTS</h1>
             <button onClick={() => window.location.reload()} style={{ padding: '6px 15px', backgroundColor: '#3b82f6', border: 'none', borderRadius: '4px', color: 'white', cursor: 'pointer', fontSize: '1rem' }}>NEW SIMULATION</button>
         </header>
 
-
-        {/* ZONA INFERIOR: EL PODIO (3 Columnas) */}
         <div style={{ 
             display: 'grid', 
             gridTemplateColumns: '1fr 1fr 1fr', 
             gap: '30px', 
-            alignItems: 'end', // Alineados a la base
+            alignItems: 'end', 
             paddingBottom: '20px'
         }}>
             
-            {/* LADO IZQUIERDO: 2do LUGAR */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 {renderCard(sortedAlgorithms[1], true)}
             </div>
 
-            {/* CENTRO: GANADOR + RADAR PEQUEÑO */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
                 <div style={{ transform: 'scale(0.8)', margin: '-50px 0' }}>
                     {renderRadar()}
@@ -143,7 +129,6 @@ return (
                 </div>
             </div>
 
-            {/* LADO DERECHO: 3er LUGAR */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 {renderCard(sortedAlgorithms[2], true)}
             </div>

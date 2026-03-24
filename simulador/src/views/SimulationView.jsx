@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-// --- COMPONENTES VISUALES INTERNOS ---
 const formatTimeline = (timelineArray) => {
     const blocks = [];
     let current = null;
@@ -87,7 +86,6 @@ const GanttChart = ({ timeline, processes }) => {
     );
 };
 
-// --- COMPONENTE HOVER INFO ---
 const HoverInfo = ({ children }) => (
     <div style={{
         position: 'absolute',
@@ -104,7 +102,6 @@ const HoverInfo = ({ children }) => (
     </div>
 );
 
-// --- VISTA PRINCIPAL ---
 const SimulationView = ({
                             processes,
                             quantum,
@@ -129,9 +126,8 @@ const SimulationView = ({
             overflow: 'hidden'
         }}>
 
-            {/* --- PANEL IZQUIERDO --- */}
             <div style={{
-                width: '280px', // Aumenté un poco el ancho para que la tabla respire
+                width: '280px', 
                 padding: '20px',
                 borderRight: '1px solid #222',
                 display: 'flex',
@@ -150,7 +146,7 @@ const SimulationView = ({
                             marginBottom: '20px',
                             borderRadius: '10px',
                             opacity: 0.9,
-                            display: 'none' // Oculto el robot para dar espacio a la tabla, quita esta línea si lo quieres mantener
+                            display: 'none' 
                         }}
                     />
 
@@ -188,7 +184,6 @@ const SimulationView = ({
                         FINISH
                     </button>
 
-                    {/* --- NUEVA TABLA DE PROCESOS --- */}
                     <div style={{ backgroundColor: '#131a2d', padding: '10px', borderRadius: '8px', border: '1px solid #222' }}>
                         <h4 style={{ margin: '0 0 10px 0', color: '#B8C7E0', textAlign: 'center' }}>Datos de Entrada</h4>
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
@@ -215,7 +210,6 @@ const SimulationView = ({
                                                 {p.id}
                                             </span>
                                     </td>
-                                    {/* Usamos propiedades seguras por si en tu estado se llaman arrivalTime o arrival */}
                                     <td style={{ padding: '6px', textAlign: 'center' }}>{p.arrivalTime ?? p.arrival ?? 0}</td>
                                     <td style={{ padding: '6px', textAlign: 'center' }}>{p.burstTime ?? p.burst ?? 0}</td>
                                     <td style={{ padding: '6px', textAlign: 'center' }}>{(p.ioRequestTime ?? p.ioRequestTime) > 0 ? (p.ioRequestTime ?? p.ioRequestTime) : '-'}</td>
@@ -237,7 +231,6 @@ const SimulationView = ({
                 </div>
             </div>
 
-            {/* --- PANEL DERECHO --- */}
             <div style={{
                 flex: 1,
                 padding: '20px',
@@ -247,7 +240,6 @@ const SimulationView = ({
                 overflow: 'hidden'
             }}>
 
-                {/* VRR */}
                 <div
                     onMouseEnter={() => setHovered('vrr')}
                     onMouseLeave={() => setHovered(null)}
@@ -291,7 +283,6 @@ const SimulationView = ({
                     <GanttChart timeline={formatTimeline(mlfqResult.timeline)} processes={processes} />
                 </div>
 
-                {/* SRTF */}
                 <div
                     onMouseEnter={() => setHovered('srtf')}
                     onMouseLeave={() => setHovered(null)}
