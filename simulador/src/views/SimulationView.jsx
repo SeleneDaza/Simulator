@@ -75,6 +75,8 @@ const SimulationView = ({
                             clock,
                             isPlaying,
                             setIsPlaying,
+                            simulationSpeed,
+                            setSimulationSpeed,
                             vrrResult,
                             mlfqResult,
                             srtfResult,
@@ -144,6 +146,20 @@ const SimulationView = ({
 
                 <div className="simulation-clock">
                     ⏰ {clock}
+                </div>
+
+                <div className="simulation-speed-control">
+                    <span>Speed:</span>
+                    <input
+                        type="range"
+                        min="0.5"
+                        max="4"
+                        step="0.5"
+                        value={simulationSpeed}
+                        onChange={(e) => setSimulationSpeed(parseFloat(e.target.value))}
+                        className="speed-slider"
+                    />
+                    <span>{simulationSpeed.toFixed(2)}x</span>
                 </div>
             </div>
 

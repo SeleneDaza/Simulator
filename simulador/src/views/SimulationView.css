@@ -5,10 +5,22 @@
   height: 100vh;
   background-color: #0b1020;
   color: white;
-  overflow: hidden;
+  overflow: visible;
+  animation: fadeIn 0.8s ease-out;
 }
 
 /* LEFT SIDEBAR */
+.simulation-sidebar {
+  width: 280px;
+  padding: 20px;
+  border-right: 1px solid #222;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #0f1630;
+  animation: slideInLeft 0.6s ease-out;
+}
+
 .simulation-sidebar {
   width: 280px;
   padding: 20px;
@@ -22,6 +34,12 @@
 .simulation-sidebar-scroll {
   overflow-y: auto;
   padding-right: 5px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.simulation-sidebar-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .simulation-sidebar h2 {
@@ -40,6 +58,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  animation: slideInUp 0.6s ease-out 0.3s backwards;
 }
 
 /* BUTTONS */
@@ -71,6 +90,24 @@
 .btn-finish {
   margin-bottom: 20px;
   background-color: #e83e8c;
+}
+
+.btn-play-pause.playing:hover,
+.btn-play-pause.stopped:hover,
+.btn-finish:hover {
+  transform: translateY(-2px);
+}
+
+.btn-play-pause.playing:hover {
+  box-shadow: 0 0 20px rgba(255, 193, 7, 0.4);
+}
+
+.btn-play-pause.stopped:hover {
+  box-shadow: 0 0 20px rgba(40, 167, 69, 0.4);
+}
+
+.btn-finish:hover {
+  box-shadow: 0 0 20px rgba(232, 62, 140, 0.4);
 }
 
 /* SIDEBAR TABLE */
@@ -130,6 +167,68 @@
   margin-top: 20px;
 }
 
+.simulation-speed-control {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: #c6d2e4;
+}
+
+.simulation-speed-control span {
+  font-size: 0.9rem;
+  min-width: 40px;
+  text-align: center;
+}
+
+.speed-slider {
+  width: 120px;
+  height: 6px;
+  border-radius: 3px;
+  background: #2b3a57;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.speed-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #60a5fa;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+  transition: all 0.2s ease;
+}
+
+.speed-slider::-webkit-slider-thumb:hover {
+  background: #3b82f6;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
+  transform: scale(1.1);
+}
+
+.speed-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #60a5fa;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+  transition: all 0.2s ease;
+}
+
+.speed-slider::-moz-range-thumb:hover {
+  background: #3b82f6;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
+  transform: scale(1.1);
+}
+
 /* RIGHT CONTENT */
 .simulation-content {
   flex: 1;
@@ -147,11 +246,18 @@
   padding: 15px;
   border-radius: 12px;
   position: relative;
+  animation: fadeIn 0.6s ease-out;
+  transition: all 0.3s ease;
+}
+
+.algorithm-section:hover {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
 
 .algorithm-title {
   margin: 0 0 15px 0;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .algorithm-title.vrr {
@@ -194,6 +300,7 @@
   position: relative;
   width: 100%;
   margin-bottom: 25px;
+  animation: slideInUp 0.6s ease-out;
 }
 
 .gantt-bar-container {
@@ -203,6 +310,12 @@
   border-radius: 8px;
   overflow: hidden;
   border: 2px solid black;
+  transition: all 0.3s ease;
+}
+
+.gantt-bar-container:hover {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  border-color: rgba(255,255,255,0.2);
 }
 
 .gantt-bar-item {
@@ -249,4 +362,30 @@
 .waiting-message,
 .no-data-message {
   color: #888;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }

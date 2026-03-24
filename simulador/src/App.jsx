@@ -17,6 +17,7 @@ const App = () => {
   const [quantum, setQuantum] = useState(4);
   const [clock, setClock] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [simulationSpeed, setSimulationSpeed] = useState(1); // 1x default
 
   const pendingVRR = useRef([]);
   const pendingMLFQ = useRef([]);
@@ -33,6 +34,7 @@ const App = () => {
   useEffect(() => {
     let timer;
     if (isPlaying && currentView === 'SIMULATION') {
+      const interval = Math.max(50, 1000 / simulationSpeed);
       timer = setInterval(() => {
 
         const arrVRR = pendingVRR.current.filter(p => p.arrivalTime === clock);
@@ -57,10 +59,10 @@ const App = () => {
         setMlfqResult({ ...simMLFQ.current });
         setSrtfResult({ ...simSRTF.current });
         setClock(prev => prev + 1);
-      }, 1000);
+      }, interval);
     }
     return () => clearInterval(timer);
-  }, [isPlaying, clock, currentView, quantum]);
+  }, [isPlaying, clock, currentView, quantum, simulationSpeed]);
 
   const handleStartSimulation = () => {
     if (processes.length === 0) return alert("Agrega procesos.");
@@ -108,6 +110,8 @@ const App = () => {
                 clock={clock}
                 isPlaying={isPlaying}
                 setIsPlaying={setIsPlaying}
+                simulationSpeed={simulationSpeed}
+                setSimulationSpeed={setSimulationSpeed}
                 vrrResult={vrrResult}
                 mlfqResult={mlfqResult}
                 srtfResult={srtfResult}

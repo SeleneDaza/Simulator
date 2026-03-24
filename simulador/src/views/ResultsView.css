@@ -6,7 +6,7 @@
   flex-direction: column;
   padding: 20px 50px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* HEADER */
@@ -15,12 +15,14 @@
   justify-content: space-between;
   align-items: center;
   margin: 15px;
+  animation: slideInDown 0.6s ease-out;
 }
 
 .results-title {
   font-size: 1.2rem;
   font-weight: 1000;
   margin: 0;
+  animation: fadeIn 0.7s ease-out;
 }
 
 .btn-new-simulation {
@@ -37,6 +39,8 @@
 
 .btn-new-simulation:hover {
   background-color: #2563eb;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
 }
 
 /* LAYOUT GRID */
@@ -96,6 +100,12 @@
   position: relative;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
+  animation: slideInUp 0.6s ease-out;
+}
+
+.algorithm-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
 }
 
 .algorithm-card.mini {
@@ -211,4 +221,30 @@
   color: white;
   font-weight: bold;
   font-size: 0.8rem;
+}
+
+/* ANIMATIONS */
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
