@@ -200,8 +200,8 @@ body::after {
 
   /* glow fuerte */
   box-shadow: 
-    0 8px 8px rgba(167,139,250,0.5),
-    0 8px 8px rgba(244,114,182,0.3);
+    0 0px 0px rgba(167,139,250,0.5),
+    0 0px 0px rgba(244,114,182,0.3);
 
   position: relative;
 }
@@ -227,21 +227,6 @@ body::after {
 .btn-primary:hover::before {
   opacity: 1;
   animation: shine 1s linear;
-}
-
-@keyframes shine {
-  from { transform: translateX(-50%); }
-  to { transform: translateX(100%); }
-}
-
-.btn-primary:hover {
-  transform: translateY(-3px) scale(1.03);
-
-  box-shadow: 
-    0 10px 10px rgba(167,139,250,0.7),
-    0 0 10px rgba(244,114,182,0.5);
-
-  overflow-x: visible;
 }
 
 .btn-primary:active {
