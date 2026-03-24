@@ -11,18 +11,16 @@ export class Process {
         this.burstTime = burstTime;
         this.remainingTime = burstTime;
 
-        // I/O configs
-        this.ioRequestTime = ioRequestTime; // Relative time (e.g. after 2ms of CPU)
-        this.ioBurst = ioBurst; // How long I/O takes
+        this.ioRequestTime = ioRequestTime; 
+        this.ioBurst = ioBurst; 
         this.ioRemaining = ioBurst;
-        this.hasDoneIO = false; // Flag to ensure I/O happens only once per process (simple model)
+        this.hasDoneIO = false; 
 
-        // State & Stats
-        this.state = 'READY'; // READY, RUNNING, WAITING, COMPLETED
+        this.state = 'READY'; 
         this.startTime = null;
         this.completionTime = null;
         this.waitingTime = 0;
-        this.quantumUsed = 0; // Tracks quantum usage for RR
+        this.quantumUsed = 0; 
         this.color = `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
     }
 }

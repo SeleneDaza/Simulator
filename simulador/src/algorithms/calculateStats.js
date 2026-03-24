@@ -1,5 +1,3 @@
-// src/algorithms/calculateStats.js
-
 export const calculateStats = (timelineArray, processes) => {
     if (timelineArray.length === 0) return null;
 

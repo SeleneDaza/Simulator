@@ -47,7 +47,6 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
         closeModal();
     };
 
-    // 1. SOLUCIÓN: Eliminamos el window.confirm para borrar directamente
     const deleteProcess = (id) => {
         setProcesses(processes.filter(p => p.id !== id));
     };
@@ -99,7 +98,7 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
                                     {p.ioRequestTime && <><br /><span style={{ color: '#ff85c0' }}>⏳ I/O at tick {p.ioRequestTime}</span></>}
                                 </span>
                             </div>
-                            {/* 2. SOLUCIÓN: Botón de eliminar más limpio y moderno */}
+
                             <button
                                 onClick={() => deleteProcess(p.id)}
                                 style={{

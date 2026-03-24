@@ -2,8 +2,6 @@ export const vrrTick = (state, clock, quantum) => {
 
     const { readyQueue, auxQueue, completed, ioList } = state;
 
-    // 1. Handle I/O Processes (Independent of CPU)
-
     for (let i = ioList.length - 1; i >= 0; i--) {
 
         const process = ioList[i];
@@ -14,7 +12,7 @@ export const vrrTick = (state, clock, quantum) => {
 
             process.state = 'READY';
 
-            auxQueue.push(process); // VRR Priority
+            auxQueue.push(process); 
 
             ioList.splice(i, 1);
 
@@ -22,17 +20,11 @@ export const vrrTick = (state, clock, quantum) => {
 
     }
 
-    // 2. Scheduler Assessment (Check previous tick's results)
-
     if (state.running) {
 
         const proc = state.running;
 
         const executedTime = proc.burstTime - proc.remainingTime;
-
-        // Critical: Check conditions based on CURRENT state (before execution)
-
-        // But wait... if we check before execution, we are checking the state resulted from PREVIOUS tick.
 
         const isFinished = proc.remainingTime <= 0;
 
@@ -50,7 +42,7 @@ export const vrrTick = (state, clock, quantum) => {
 
             proc.state = 'COMPLETED';
 
-            proc.completionTime = clock; // Finished exactly at 'clock' start (conceptually end of prev tick)
+            proc.completionTime = clock; 
 
             completed.push(proc);
 
@@ -70,7 +62,7 @@ export const vrrTick = (state, clock, quantum) => {
 
             proc.state = 'READY';
 
-            proc.quantumUsed = 0; // Reset quantum
+            proc.quantumUsed = 0;
 
             readyQueue.push(proc);
 
@@ -80,7 +72,6 @@ export const vrrTick = (state, clock, quantum) => {
 
     }
 
-    // 3. Dispatcher (If CPU is clear, pick next)
 
     if (!state.running) {
 
@@ -110,7 +101,6 @@ export const vrrTick = (state, clock, quantum) => {
 
     }
 
-    // 4. Execution (Run 1 unit of time)
 
     if (state.running) {
 
@@ -120,15 +110,7 @@ export const vrrTick = (state, clock, quantum) => {
 
         proc.quantumUsed++;
 
-        // We DO NOT check for exit/preemption here.
-
-        // We let the state persist until the start of the NEXT tick.
-
-        // This ensures visual consistency: "Tick 3: P1 runs" -> Output shows P1.
-
     }
-
-    // 5. Update Waiting Times
 
     readyQueue.forEach(p => p.waitingTime++);
 
