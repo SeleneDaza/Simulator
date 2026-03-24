@@ -218,7 +218,7 @@ const SimulationView = ({
                                     {/* Usamos propiedades seguras por si en tu estado se llaman arrivalTime o arrival */}
                                     <td style={{ padding: '6px', textAlign: 'center' }}>{p.arrivalTime ?? p.arrival ?? 0}</td>
                                     <td style={{ padding: '6px', textAlign: 'center' }}>{p.burstTime ?? p.burst ?? 0}</td>
-                                    <td style={{ padding: '6px', textAlign: 'center' }}>{(p.ioTime ?? p.io) > 0 ? (p.ioTime ?? p.io) : '-'}</td>
+                                    <td style={{ padding: '6px', textAlign: 'center' }}>{(p.ioRequestTime ?? p.ioRequestTime) > 0 ? (p.ioRequestTime ?? p.ioRequestTime) : '-'}</td>
                                 </tr>
                             ))}
                             </tbody>

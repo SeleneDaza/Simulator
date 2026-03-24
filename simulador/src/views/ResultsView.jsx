@@ -28,9 +28,9 @@ const ResultsView = ({ statsVRR, statsMLFQ, statsSRTF }) => {
     ].filter(Boolean);
 
     const getBadge = (rank) => {
-        if (rank === 1) return { icon: '🥇', label: '1er Lugar', color: '#FFD700', bg: 'rgba(255, 215, 0, 0.15)' };
-        if (rank === 2) return { icon: '🥈', label: '2do Lugar', color: '#E0E0E0', bg: 'rgba(224, 224, 224, 0.15)' };
-        return { icon: '🥉', label: '3er Lugar', color: '#CD7F32', bg: 'rgba(205, 127, 50, 0.15)' };
+        if (rank === 1) return { icon: '🥇', label: '1st place', color: '#FFD700', bg: 'rgba(255, 215, 0, 0.15)' };
+        if (rank === 2) return { icon: '🥈', label: '2nd place', color: '#E0E0E0', bg: 'rgba(224, 224, 224, 0.15)' };
+        return { icon: '🥉', label: '3th place', color: '#CD7F32', bg: 'rgba(205, 127, 50, 0.15)' };
     };
 
     const getBarWidth = (val, maxVal) => {
@@ -123,7 +123,7 @@ const ResultsView = ({ statsVRR, statsMLFQ, statsSRTF }) => {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                     <div>
-                        <span style={{ display: 'block', color: '#B8C7E0', fontSize: '0.8rem' }}>CPU Utilización</span>
+                        <span style={{ display: 'block', color: '#B8C7E0', fontSize: '0.8rem' }}>CPU</span>
                         <strong style={{ color: 'white' }}>{alg.cpuUtil}%</strong>
                     </div>
                     <div>
@@ -153,10 +153,9 @@ const ResultsView = ({ statsVRR, statsMLFQ, statsSRTF }) => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '60px' }}>
                     <div>
                         <h1 style={{ margin: 0, fontSize: '2.5rem', color: 'white' }}>Resultados de Simulación</h1>
-                        <p style={{ color: '#B8C7E0', margin: '5px 0 0 0' }}>El podio se define por el menor <strong>Tiempo de Espera Promedio</strong>.</p>
                     </div>
                     <button onClick={() => window.location.reload()} style={{ padding: '12px 25px', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold', backgroundColor: '#6ea8ff', color: 'white', border: 'none', fontSize: '1.1rem', boxShadow: '0 4px 15px rgba(110, 168, 255, 0.4)', transition: 'transform 0.2s' }} onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.target.style.transform = 'scale(1)'}>
-                        NUEVA SIMULACIÓN
+                        NEW SIMULATION
                     </button>
                 </div>
 
