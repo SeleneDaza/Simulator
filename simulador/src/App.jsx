@@ -1,102 +1,138 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
+// Importaciones del motor
+import { vrrTick } from "./algorithms/roundRobin";
+import { mlfqTick } from "./algorithms/mlfq";
+import { srtfTick } from "./algorithms/srtf";
+import { Process } from "./models/Process";
+import { calculateStats } from "./algorithms/calculateStats"; // Importamos la matemática desde la capa lógica
+
+// Importaciones de la 3 paginas
+import ConfigView from './views/ConfigView.jsx';
+import SimulationView from './views/SimulationView.jsx';
+import ResultsView from './views/ResultsView.jsx';
+
 const App = () => {
-  const [processes, setProcesses] = useState([
-  ]);
+  const [currentView, setCurrentView] = useState('CONFIG');
+  const [processes, setProcesses] = useState([]);
+  const [quantum, setQuantum] = useState(4);
+  const [clock, setClock] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  const addProcess = () => {
-    const name = prompt("Nombre del proceso (ej: P1):");
-    if (!name) return;
+  const pendingVRR = useRef([]);
+  const pendingMLFQ = useRef([]);
+  const pendingSRTF = useRef([]);
 
-    const arrival = parseInt(prompt("Tiempo de llegada (arrival):"), 10);
-    if (isNaN(arrival)) {
-      alert("Arrival inválido");
-      return;
+  // Agregamos un campo "stats" a las referencias para que el algoritmo guarde sus resultados ahí
+  const simVRR = useRef({ readyQueue: [], auxQueue: [], ioList: [], running: null, completed: [], timeline: [], stats: null });
+  const simMLFQ = useRef({ queues: [[], [], []], ioList: [], running: null, completed: [], timeline: [], stats: null });
+  const simSRTF = useRef({ readyQueue: [], ioList: [], running: null, completed: [], timeline: [], stats: null });
+
+  const [vrrResult, setVrrResult] = useState(simVRR.current);
+  const [mlfqResult, setMlfqResult] = useState(simMLFQ.current);
+  const [srtfResult, setSrtfResult] = useState(simSRTF.current);
+
+  // Bucle de Simulación
+  useEffect(() => {
+    let timer;
+    if (isPlaying && currentView === 'SIMULATION') {
+      timer = setInterval(() => {
+        // Lógica de VRR
+        const arrVRR = pendingVRR.current.filter(p => p.arrivalTime === clock);
+        pendingVRR.current = pendingVRR.current.filter(p => p.arrivalTime > clock);
+        arrVRR.forEach(p => simVRR.current.readyQueue.push(p));
+        vrrTick(simVRR.current, clock, quantum);
+        simVRR.current.timeline.push(simVRR.current.running ? simVRR.current.running.pid : "IDLE");
+
+        // Lógica de MLFQ
+        const arrMLFQ = pendingMLFQ.current.filter(p => p.arrivalTime === clock);
+        pendingMLFQ.current = pendingMLFQ.current.filter(p => p.arrivalTime > clock);
+        arrMLFQ.forEach(p => simMLFQ.current.queues[0].push(p));
+        mlfqTick(simMLFQ.current, clock);
+        simMLFQ.current.timeline.push(simMLFQ.current.running ? simMLFQ.current.running.pid : "IDLE");
+
+        // Lógica de SRTF
+        const arrSRTF = pendingSRTF.current.filter(p => p.arrivalTime === clock);
+        pendingSRTF.current = pendingSRTF.current.filter(p => p.arrivalTime > clock);
+        arrSRTF.forEach(p => simSRTF.current.readyQueue.push(p));
+        srtfTick(simSRTF.current, clock);
+        simSRTF.current.timeline.push(simSRTF.current.running ? simSRTF.current.running.pid : "IDLE");
+
+        setVrrResult({ ...simVRR.current });
+        setMlfqResult({ ...simMLFQ.current });
+        setSrtfResult({ ...simSRTF.current });
+        setClock(prev => prev + 1);
+      }, 1000);
     }
+    return () => clearInterval(timer);
+  }, [isPlaying, clock, currentView, quantum]);
 
-    const burst = parseInt(prompt("Tiempo de ejecución (burst):"), 10);
-    if (isNaN(burst)) {
-      alert("Burst inválido");
-      return;
-    }
+  // Funciones puente
+  const handleStartSimulation = () => {
+    if (processes.length === 0) return alert("Agrega procesos.");
+    const getInitial = () => processes.map(p => {
+      const proc = new Process({ pid: p.id, arrivalTime: p.arrival, burstTime: p.burst, ioRequestTime: p.ioRequestTime });
+      proc.color = p.color;
+      return proc;
+    });
+    pendingVRR.current = getInitial(); pendingMLFQ.current = getInitial(); pendingSRTF.current = getInitial();
 
-    const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
-
-    setProcesses([
-      ...processes,
-      { id: name, arrival, burst, color: randomColor }
-    ]);
+    // 1. Iniciamos la reproducción automáticamente
+    setIsPlaying(true);
+    setCurrentView('SIMULATION');
   };
 
-  const deleteProcess = (id) => {
-    const confirmDelete = window.confirm(`¿Eliminar ${id}?`);
-    if (!confirmDelete) return;
+  const handleFinishSimulation = () => {
+    setIsPlaying(false);
+    // AQUÍ DELEGAMOS EL CÁLCULO A LA CAPA LÓGICA ANTES DE RENDERIZAR LA VISTA
+    simVRR.current.stats = calculateStats(simVRR.current.timeline, processes);
+    simMLFQ.current.stats = calculateStats(simMLFQ.current.timeline, processes);
+    simSRTF.current.stats = calculateStats(simSRTF.current.timeline, processes);
 
-    setProcesses(processes.filter(p => p.id !== id));
+    // Actualizamos el estado para que la vista 3 reciba los datos ya procesados
+    setVrrResult({ ...simVRR.current });
+    setMlfqResult({ ...simMLFQ.current });
+    setSrtfResult({ ...simSRTF.current });
+
+    setCurrentView('RESULTS');
   };
 
-  const addRandomProcess = () => {
-    
-  }
-
+  // Renderizado Condicional Limpio
   return (
-    <div className="layout-wrapper">
-      {/* SECCIÓN IZQUIERDA: 2 COLUMNAS */}
-      <aside className="sidebar">
-        <div className="robot-container">
-           {/* Aquí iría tu imagen añadida */}
-           <div className="robot-placeholder robot-img" style={{height: '150px', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-             🤖
-           </div>
-        </div>
-        
-        <h1 className="title" style={{fontSize: '2.5rem', fontWeight: '800'}}>
-          RR <span style={{color: 'var(--air-blue)'}}>vs</span> MLQ <span style={{color: 'var( --air-blue)'}}>vs</span> SRTF
-        </h1>
-        <p style={{color: 'var(--pink-lavender)', letterSpacing: '4px'}}>SIMULATOR</p>
+      <>
+        {currentView === 'CONFIG' && (
+            <ConfigView
+                processes={processes}
+                setProcesses={setProcesses}
+                quantum={quantum}
+                setQuantum={setQuantum}
+                onStart={handleStartSimulation}
+            />
+        )}
 
-        <div className="controls">
-          <div className= "quantum" style={{textAlign: 'left'}}>
-            <label style={{fontSize: '1rem', color: ' #B8C7E0', margin: 2, marginTop: 4}}>QUANTUM</label>
-            <input type="number" defaultValue="4" className="custom-input" />
-          </div>
-          <div className='buttonsDiv'>
-            <button className="btn-secondary" style={{border: '2px solid var(--pink-lavender)', background: 'none', color: 'var(--pink-lavender)', padding: '15px', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold'}}>
-              GENERATE RANDOM
-            </button>
-            <button className="btn-primary">START SIMULATION</button>
-          </div>
-        </div>
-      </aside>
+        {currentView === 'SIMULATION' && (
+            <SimulationView
+                processes={processes}
+                quantum={quantum}
+                clock={clock}
+                isPlaying={isPlaying}
+                setIsPlaying={setIsPlaying}
+                vrrResult={vrrResult}
+                mlfqResult={mlfqResult}
+                srtfResult={srtfResult}
+                onFinish={handleFinishSimulation}
+            />
+        )}
 
-      {/* SECCIÓN DERECHA: 4 COLUMNAS */}
-      <main className="process-panel">
-        <h2 style={{ fontSize: '3rem', opacity: 0.9, color: '#EAF2FF'}}>Processes</h2>
-        
-        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px'}}>
-          {processes.map((p, index) => (
-            <div key={p.id} className="process-card" style={{animationDelay: `${index * 0.1}s`}}>
-              <div className="color-box" style={{ backgroundColor: p.color, width: '50px', height: '50px', borderRadius: '12px', boxShadow: '0 5px 15px rgba(0,0,0,0.2)' }}></div>
-              <div>
-                <strong style={{fontSize: '1.4rem', display: 'block'}}>{p.id}</strong>
-                <span style={{color: 'var(--air-blue)', fontSize: '0.9rem'}}>Arr: {p.arrival}s | Burst: {p.burst}s</span>
-              </div>
-              <button 
-                className="delete-btn"
-                onClick={() => deleteProcess(p.id)}
-              >
-                X
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <button onClick={addProcess} className="add-btn" >
-          + ADD NEW PROCCESS
-        </button>
-      </main>
-    </div>
+        {currentView === 'RESULTS' && (
+            <ResultsView
+                statsVRR={vrrResult.stats}
+                statsMLFQ={mlfqResult.stats}
+                statsSRTF={srtfResult.stats}
+            />
+        )}
+      </>
   );
 };
 
