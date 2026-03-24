@@ -1,4 +1,5 @@
 import React from 'react';
+import './ResultsView.css';
 
 const ResultsView = ({ statsVRR, statsMLFQ, statsSRTF }) => {
     const safeStats = (stats) => stats || { cpuUtil: '0.0', throughput: '0.000', avgTurnaround: '0.0', avgWait: '0.0', avgResponse: '0.0', fairness: '0.00' };
@@ -27,8 +28,8 @@ const ResultsView = ({ statsVRR, statsMLFQ, statsSRTF }) => {
     };
 
     const renderRadar = () => (
-        <div style={{ width: '350px', height: '350px', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="100%" height="100%" viewBox="0 0 200 200">
+        <div className="radar-container">
+            <svg width="100%" height="100%" viewBox="0 0 200 200" className="radar-svg">
                 {[0.2, 0.4, 0.6, 0.8, 1].map(f => (
                     <polygon key={f} points={labels.map((_, i) => getPoint(f, 1, i, labels.length)).join(' ')} 
                     fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
@@ -45,51 +46,50 @@ const ResultsView = ({ statsVRR, statsMLFQ, statsSRTF }) => {
                         getPoint(alg.cpuUtil, maxCPU, 3, 5),
                         getPoint(alg.throughput, maxThrough, 4, 5)
                     ].join(' ');
-                    return <polygon key={alg.name} points={pts} fill={`${alg.color}33`} stroke={alg.color} strokeWidth="2" />;
+                    return <polygon key={alg.name} points={pts} fill={`${alg.color}33`} stroke={alg.color} strokeWidth="2" />
                 })}
             </svg>
             {labels.map((l, i) => {
                 const pos = getPoint(1.2, 1, i, labels.length).split(',');
-                return <span key={l} style={{ position: 'absolute', left: `${pos[0]/2}%`, top: `${pos[1]/2}%`, fontSize: '0.6rem', color: '#94a3b8', transform: 'translate(-50%, -50%)' }}>{l}</span>;
+                return <span key={l} className="radar-label" style={{ left: `${pos[0]/2}%`, top: `${pos[1]/2}%` }}>{l}</span>;
             })}
         </div>
     );
 
     const StatBar = ({ label, value, val, max, color }) => (
-        <div style={{ marginBottom: '10px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.75rem', marginBottom: '2px' }}>
+        <div className="stat-bar">
+            <div className="stat-bar-header">
                 <span>{label}</span>
-                <strong style={{ color: 'white' }}>{value}</strong>
+                <strong className="stat-bar-value">{value}</strong>
             </div>
-            <div style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '10px', height: '4px', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${Math.max((parseFloat(val)/max)*100, 2)}%`, backgroundColor: color, transition: 'width 1s ease-out' }} />
+            <div className="stat-bar-container">
+                <div className="stat-bar-fill" style={{ width: `${Math.max((parseFloat(val)/max)*100, 2)}%`, backgroundColor: color }} />
             </div>
         </div>
     );
 
     const renderCard = (alg, mini = false) => {
         const isWinner = alg.rank === 1;
+        const baseClass = 'algorithm-card';
+        const sizeClass = mini ? 'mini' : '';
+        const rankClass = isWinner ? 'winner' : (alg.rank === 2 ? 'second' : 'third');
+        
         return (
-            <div key={alg.name} style={{
-                backgroundColor: '#1e293b', padding: '20px', borderRadius: '20px',
-                border: `1px solid ${isWinner ? alg.color : 'rgba(255,255,255,0.1)'}`,
-                width: mini ? '280px' : '320px', height: 'fit-content', position: 'relative',
-                boxShadow: isWinner ? `0 10px 40px ${alg.color}22` : '0 5px 15px rgba(0,0,0,0.2)',
-            }}>
-                <div style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#0f172a', color: isWinner ? '#fbbf24' : '#cbd5e1', padding: '2px 10px', borderRadius: '8px', border: '1px solid currentColor', fontSize: '0.6rem', fontWeight: 'bold' }}>
+            <div key={alg.name} className={`${baseClass} ${rankClass} ${sizeClass}`}>
+                <div className="card-rank" style={{ color: isWinner ? '#fbbf24' : '#cbd5e1' }}>
                     {alg.rank === 1 ? '🏆 WINNER' : `${alg.rank}º PLACE`}
                 </div>
-                <h2 style={{ color: alg.color, textAlign: 'center', margin: '5px 0 15px 0', fontSize: '1.2rem' }}>{alg.name}</h2>
+                <h2 className={`card-title ${alg.name.toLowerCase()}`} style={{ color: alg.color }}>{alg.name}</h2>
                 <StatBar label="Wait" value={alg.avgWait} val={alg.avgWait} max={maxWait} color={alg.color} />
                 <StatBar label="Turn" value={alg.avgTurnaround} val={alg.avgTurnaround} max={maxTurnaround} color={alg.color} />
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '15px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ color: '#64748b', fontSize: '0.6rem' }}>CPU</div>
-                        <div style={{ color: 'white', fontWeight: 'bold', fontSize: '0.8rem' }}>{alg.cpuUtil}%</div>
+                <div className="card-stats-grid">
+                    <div className="card-stat-item">
+                        <div className="card-stat-label">CPU</div>
+                        <div className="card-stat-value">{alg.cpuUtil}%</div>
                     </div>
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ color: '#64748b', fontSize: '0.6rem' }}>THR</div>
-                        <div style={{ color: 'white', fontWeight: 'bold', fontSize: '0.8rem' }}>{alg.throughput}</div>
+                    <div className="card-stat-item">
+                        <div className="card-stat-label">THR</div>
+                        <div className="card-stat-value">{alg.throughput}</div>
                     </div>
                 </div>
             </div>
@@ -97,31 +97,20 @@ const ResultsView = ({ statsVRR, statsMLFQ, statsSRTF }) => {
     };
 
 return (
-    <div style={{ 
-        width: '100vw', height: '100vh', 
-        display: 'flex', flexDirection: 'column', 
-        padding: '20px 50px', boxSizing: 'border-box',
-        overflow: 'hidden' 
-    }}>
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '15px' }}>
-            <h1 style={{ fontSize: '1.2rem', fontWeight: '1000', margin: 0 }}>RESULTS</h1>
-            <button onClick={() => window.location.reload()} style={{ padding: '6px 15px', backgroundColor: '#3b82f6', border: 'none', borderRadius: '4px', color: 'white', cursor: 'pointer', fontSize: '1rem' }}>NEW SIMULATION</button>
+    <div className="results-container">
+        <header className="results-header">
+            <h1 className="results-title">RESULTS</h1>
+            <button onClick={() => window.location.reload()} className="btn-new-simulation">NEW SIMULATION</button>
         </header>
 
-        <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: '1fr 1fr 1fr', 
-            gap: '30px', 
-            alignItems: 'end', 
-            paddingBottom: '20px'
-        }}>
+        <div className="results-grid">
             
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="results-left">
                 {renderCard(sortedAlgorithms[1], true)}
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
-                <div style={{ transform: 'scale(0.8)', margin: '-50px 0' }}>
+            <div className="results-center">
+                <div style={{ transform: 'scale(1.2)', margin: '0' }}>
                     {renderRadar()}
                 </div>
                 <div style={{ transform: 'scale(1.05)', zIndex: 10 }}>
@@ -129,7 +118,7 @@ return (
                 </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="results-right">
                 {renderCard(sortedAlgorithms[2], true)}
             </div>
 
