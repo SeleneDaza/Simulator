@@ -262,24 +262,28 @@ body::after {
   align-items: center;
   gap: 15px;
 
-  cursor: pointer;
-  border: 1px solid transparent;
+  cursor: default;
+  border: 1px solid rgba(255,255,255,0.1);
 
-  transition: all var(--transition-fast);
+  transition: none;
+  box-shadow: none;
 }
 
-/* Hover mejorado */
 .process-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  background: #4a6a91;
+  transform: none;
+  background: #3E5A7A;
   border-color: rgba(255,255,255,0.1);
-
-  box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+  box-shadow: none;
 }
 
 /* Color box glow */
 .color-box {
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+  flex-shrink: 0;
 }
 
 .delete-btn {

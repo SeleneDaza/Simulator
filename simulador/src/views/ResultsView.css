@@ -99,13 +99,13 @@
   height: fit-content;
   position: relative;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
+  transition: none;
   animation: slideInUp 0.6s ease-out;
 }
 
 .algorithm-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  transform: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .algorithm-card.mini {
