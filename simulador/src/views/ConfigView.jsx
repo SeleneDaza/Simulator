@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './ConfigView.css';
 
 const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -65,95 +66,83 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
     };
 
     return (
-        <div className="layout-wrapper" style={{ position: 'relative' }}>
-            <aside className="sidebar">
+        <div className="layout-wrapper">
+            <aside className="sidebar config-sidebar">
                 <div className="robot-container">
-                    <div className="robot-placeholder robot-img" style={{ height: '150px', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem' }}>🤖</div>
+                    <div className="robot-placeholder robot-img">🤖</div>
                 </div>
-                <h1 className="title" style={{ fontSize: '2.5rem', fontWeight: '800' }}>RR <span style={{ color: 'var(--air-blue)' }}>vs</span> MLFQ <span style={{ color: 'var(--air-blue)' }}>vs</span> SRTF</h1>
-                <p style={{ color: 'var(--pink-lavender)', letterSpacing: '4px' }}>SIMULATOR</p>
+                <h1 className="title">RR <span>vs</span> MLFQ <span>vs</span> SRTF</h1>
+                <p className="config-subtitle">SIMULATOR</p>
 
                 <div className="controls">
-                    <div className="quantum" style={{ textAlign: 'left' }}>
-                        <label style={{ fontSize: '1rem', color: '#B8C7E0', margin: 2, marginTop: 4 }}>QUANTUM</label>
+                    <div className="quantum">
+                        <label>QUANTUM</label>
                         <input type="number" value={quantum} onChange={(e) => setQuantum(parseInt(e.target.value) || 1)} className="custom-input" />
                     </div>
-                    <div className='buttonsDiv'>
-                        <button onClick={addRandomProcess} className="btn-secondary" style={{ border: '2px solid var(--pink-lavender)', background: 'none', color: 'var(--pink-lavender)', padding: '15px', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}>GENERATE RANDOM</button>
-                        <button onClick={onStart} className="btn-primary" style={{ padding: '15px', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}>START SIMULATION</button>
+                    <div className='btn-group'>
+                        <button onClick={addRandomProcess} className="btn-secondary">GENERATE RANDOM</button>
+                        <button onClick={onStart} className="btn-primary">START SIMULATION</button>
                     </div>
                 </div>
             </aside>
 
             <main className="process-panel">
-                <h2 style={{ fontSize: '3rem', opacity: 0.9, color: '#EAF2FF', margin: '0 0 20px 0' }}>Processes</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', overflowY: 'auto', maxHeight: '60vh', paddingRight: '10px' }}>
+                <h2>Processes</h2>
+                <div className="process-grid">
                     {processes.map((p, index) => (
-                        <div key={p.id} className="process-card" style={{ animationDelay: `${index * 0.1}s`, display: 'flex', alignItems: 'center', gap: '15px', background: 'rgba(255,255,255,0.05)', padding: '15px', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <div className="color-box" style={{ backgroundColor: p.color, width: '50px', height: '50px', borderRadius: '12px', boxShadow: '0 5px 15px rgba(0,0,0,0.2)' }}></div>
-                            <div style={{ flex: 1 }}>
-                                <strong style={{ fontSize: '1.4rem', display: 'block', color: 'white' }}>{p.id}</strong>
-                                <span style={{ color: '#B8C7E0', fontSize: '0.9rem' }}>
+                        <div key={p.id} className="process-card process-item" style={{ animationDelay: `${index * 0.1}s` }}>
+                            <div className="color-box" style={{ backgroundColor: p.color }}></div>
+                            <div className="process-info">
+                                <strong className="process-name">{p.id}</strong>
+                                <span className="process-details">
                                     Arr: {p.arrival}s | Burst: {p.burst}s
-                                    {p.ioRequestTime && <><br /><span style={{ color: '#ff85c0' }}>⏳ I/O at tick {p.ioRequestTime}</span></>}
+                                    {p.ioRequestTime && <><br /><span className="process-details io">⏳ I/O at tick {p.ioRequestTime}</span></>}
                                 </span>
                             </div>
 
                             <button
                                 onClick={() => deleteProcess(p.id)}
-                                style={{
-                                    background: 'rgba(255, 77, 77, 0.1)',
-                                    color: '#ff4d4d',
-                                    border: '1px solid rgba(255, 77, 77, 0.3)',
-                                    borderRadius: '10px',
-                                    width: '35px',
-                                    height: '35px',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    fontSize: '1rem'
-                                }}
-                                title="Eliminar proceso"
+                                className="delete-process-btn"
+                                title="Delete process"
                             >
                                 🗑️
                             </button>
                         </div>
                     ))}
                 </div>
-                <button onClick={openModal} className="add-btn" style={{ marginTop: '20px', padding: '15px', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold', width: '100%', border: '2px dashed var(--air-blue)', background: 'transparent', color: '#EAF2FF', fontSize: '1.1rem' }}>+ ADD NEW PROCESS</button>
+                <button onClick={openModal} className="add-btn add-process-btn">+ ADD NEW PROCESS</button>
             </main>
 
             {isModalOpen && (
-                <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(5px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-                    <div style={{ backgroundColor: '#1E293B', padding: '30px', borderRadius: '20px', width: '400px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <h3 style={{ color: 'white', marginTop: 0, marginBottom: '20px', fontSize: '1.5rem' }}>Crete new process</h3>
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h3 className="modal-title">Create New Process</h3>
 
-                        <form onSubmit={handleFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                            <div>
-                                <label style={{ color: '#B8C7E0', display: 'block', marginBottom: '5px' }}>Process's name:</label>
-                                <input type="text" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: 'rgba(255,255,255,0.1)', color: 'white', boxSizing: 'border-box' }} required />
+                        <form onSubmit={handleFormSubmit} className="modal-form">
+                            <div className="form-group">
+                                <label>Process's name:</label>
+                                <input type="text" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} required />
                             </div>
 
-                            <div style={{ display: 'flex', gap: '15px' }}>
-                                <div style={{ flex: 1 }}>
-                                    <label style={{ color: '#B8C7E0', display: 'block', marginBottom: '5px' }}>Arrival:</label>
-                                    <input type="number" min="0" value={formData.arrival} onChange={e => setFormData({...formData, arrival: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: 'rgba(255,255,255,0.1)', color: 'white', boxSizing: 'border-box' }} required />
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Arrival:</label>
+                                    <input type="number" min="0" value={formData.arrival} onChange={e => setFormData({...formData, arrival: e.target.value})} required />
                                 </div>
-                                <div style={{ flex: 1 }}>
-                                    <label style={{ color: '#B8C7E0', display: 'block', marginBottom: '5px' }}>Burst:</label>
-                                    <input type="number" min="1" value={formData.burst} onChange={e => setFormData({...formData, burst: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: 'rgba(255,255,255,0.1)', color: 'white', boxSizing: 'border-box' }} required />
+                                <div className="form-group">
+                                    <label>Burst:</label>
+                                    <input type="number" min="1" value={formData.burst} onChange={e => setFormData({...formData, burst: e.target.value})} required />
                                 </div>
                             </div>
 
-                            <div>
-                                <label style={{ color: '#ff85c0', display: 'block', marginBottom: '5px' }}>I/O (Optional):</label>
-                                <input type="number" min="1" value={formData.ioRequestTime} onChange={e => setFormData({...formData, ioRequestTime: e.target.value})} placeholder={`Ej. 2`} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: 'rgba(255,133,192,0.1)', color: 'white', boxSizing: 'border-box' }} />
+                            <div className="form-group io-input">
+                                <label>I/O (Optional):</label>
+                                <input type="number" min="1" value={formData.ioRequestTime} onChange={e => setFormData({...formData, ioRequestTime: e.target.value})} placeholder="Ex. 2" />
                             </div>
 
-                            <div style={{ display: 'flex', gap: '15px', marginTop: '15px' }}>
-                                <button type="button" onClick={closeModal} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}>Cancel</button>
-                                <button type="submit" style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', background: 'var(--air-blue, #6ea8ff)', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}>Add</button>
+                            <div className="modal-buttons">
+                                <button type="button" onClick={closeModal} className="btn-cancel">Cancel</button>
+                                <button type="submit" className="btn-submit">Add</button>
                             </div>
                         </form>
                     </div>
