@@ -106,16 +106,16 @@ const HoverInfo = ({ children }) => (
 
 // --- VISTA PRINCIPAL ---
 const SimulationView = ({
-    processes,
-    quantum,
-    clock,
-    isPlaying,
-    setIsPlaying,
-    vrrResult,
-    mlfqResult,
-    srtfResult,
-    onFinish
-}) => {
+                            processes,
+                            quantum,
+                            clock,
+                            isPlaying,
+                            setIsPlaying,
+                            vrrResult,
+                            mlfqResult,
+                            srtfResult,
+                            onFinish
+                        }) => {
 
     const [hovered, setHovered] = useState(null);
 
@@ -131,7 +131,7 @@ const SimulationView = ({
 
             {/* --- PANEL IZQUIERDO --- */}
             <div style={{
-                width: '260px',
+                width: '280px', // Aumenté un poco el ancho para que la tabla respire
                 padding: '20px',
                 borderRight: '1px solid #222',
                 display: 'flex',
@@ -139,7 +139,7 @@ const SimulationView = ({
                 justifyContent: 'space-between',
                 backgroundColor: '#0f1630'
             }}>
-                <div>
+                <div style={{ overflowY: 'auto', paddingRight: '5px' }}>
                     <h2 style={{ marginBottom: '10px' }}>Simulation</h2>
 
                     <img
@@ -149,7 +149,8 @@ const SimulationView = ({
                             width: '100%',
                             marginBottom: '20px',
                             borderRadius: '10px',
-                            opacity: 0.9
+                            opacity: 0.9,
+                            display: 'none' // Oculto el robot para dar espacio a la tabla, quita esta línea si lo quieres mantener
                         }}
                     />
 
@@ -161,10 +162,13 @@ const SimulationView = ({
                             marginBottom: '10px',
                             borderRadius: '8px',
                             fontWeight: 'bold',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            backgroundColor: isPlaying ? '#ffc107' : '#28a745',
+                            color: isPlaying ? 'black' : 'white',
+                            border: 'none'
                         }}
                     >
-                        {isPlaying ? "⏸ PAUSE" : "▶️ START"}
+                        {isPlaying ? "⏸ PAUSE" : "START"}
                     </button>
 
                     <button
@@ -172,6 +176,7 @@ const SimulationView = ({
                         style={{
                             width: '100%',
                             padding: '10px',
+                            marginBottom: '20px',
                             borderRadius: '8px',
                             fontWeight: 'bold',
                             cursor: 'pointer',
@@ -182,13 +187,51 @@ const SimulationView = ({
                     >
                         FINISH
                     </button>
+
+                    {/* --- NUEVA TABLA DE PROCESOS --- */}
+                    <div style={{ backgroundColor: '#131a2d', padding: '10px', borderRadius: '8px', border: '1px solid #222' }}>
+                        <h4 style={{ margin: '0 0 10px 0', color: '#B8C7E0', textAlign: 'center' }}>Datos de Entrada</h4>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                            <thead>
+                            <tr style={{ borderBottom: '1px solid #444', color: '#888' }}>
+                                <th style={{ padding: '5px', textAlign: 'left' }}>PID</th>
+                                <th style={{ padding: '5px', textAlign: 'center' }}>Arr</th>
+                                <th style={{ padding: '5px', textAlign: 'center' }}>Burst</th>
+                                <th style={{ padding: '5px', textAlign: 'center' }}>I/O</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {processes.map((p) => (
+                                <tr key={p.id} style={{ borderBottom: '1px solid #2a3441' }}>
+                                    <td style={{ padding: '6px 2px' }}>
+                                            <span style={{
+                                                backgroundColor: p.color,
+                                                color: 'white',
+                                                padding: '2px 8px',
+                                                borderRadius: '4px',
+                                                fontWeight: 'bold',
+                                                textShadow: '0 0 2px rgba(0,0,0,0.5)'
+                                            }}>
+                                                {p.id}
+                                            </span>
+                                    </td>
+                                    {/* Usamos propiedades seguras por si en tu estado se llaman arrivalTime o arrival */}
+                                    <td style={{ padding: '6px', textAlign: 'center' }}>{p.arrivalTime ?? p.arrival ?? 0}</td>
+                                    <td style={{ padding: '6px', textAlign: 'center' }}>{p.burstTime ?? p.burst ?? 0}</td>
+                                    <td style={{ padding: '6px', textAlign: 'center' }}>{(p.ioTime ?? p.io) > 0 ? (p.ioTime ?? p.io) : '-'}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div style={{
                     fontSize: '1.4rem',
                     fontWeight: 'bold',
                     textAlign: 'center',
-                    color: '#ff85c0'
+                    color: '#ff85c0',
+                    marginTop: '20px'
                 }}>
                     ⏰ {clock}
                 </div>
@@ -210,7 +253,7 @@ const SimulationView = ({
                     onMouseLeave={() => setHovered(null)}
                     style={{ flex: 1, backgroundColor: '#131a2d', padding: '15px', borderRadius: '12px', position: 'relative' }}
                 >
-                    <h2 style={{ color: '#007bff', cursor: 'pointer' }}>
+                    <h2 style={{ margin: '0 0 15px 0', color: '#007bff', cursor: 'pointer' }}>
                         Virtual Round Robin
                     </h2>
 
@@ -232,7 +275,7 @@ const SimulationView = ({
                     onMouseLeave={() => setHovered(null)}
                     style={{ flex: 1, backgroundColor: '#131a2d', padding: '15px', borderRadius: '12px', position: 'relative' }}
                 >
-                    <h2 style={{ color: '#28a745', cursor: 'pointer' }}>
+                    <h2 style={{ margin: '0 0 15px 0', color: '#28a745', cursor: 'pointer' }}>
                         MLFQ
                     </h2>
 
@@ -254,7 +297,7 @@ const SimulationView = ({
                     onMouseLeave={() => setHovered(null)}
                     style={{ flex: 1, backgroundColor: '#131a2d', padding: '15px', borderRadius: '12px', position: 'relative' }}
                 >
-                    <h2 style={{ color: '#dc3545', cursor: 'pointer' }}>
+                    <h2 style={{ margin: '0 0 15px 0', color: '#dc3545', cursor: 'pointer' }}>
                         SRTF
                     </h2>
 

@@ -71,7 +71,7 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
                 <div className="robot-container">
                     <div className="robot-placeholder robot-img" style={{ height: '150px', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem' }}>🤖</div>
                 </div>
-                <h1 className="title" style={{ fontSize: '2.5rem', fontWeight: '800' }}>RR <span style={{ color: 'var(--air-blue)' }}>vs</span> MLQ <span style={{ color: 'var(--air-blue)' }}>vs</span> SRTF</h1>
+                <h1 className="title" style={{ fontSize: '2.5rem', fontWeight: '800' }}>RR <span style={{ color: 'var(--air-blue)' }}>vs</span> MLFQ <span style={{ color: 'var(--air-blue)' }}>vs</span> SRTF</h1>
                 <p style={{ color: 'var(--pink-lavender)', letterSpacing: '4px' }}>SIMULATOR</p>
 
                 <div className="controls">
