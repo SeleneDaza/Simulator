@@ -69,6 +69,8 @@ const HoverInfo = ({ children }) => (
     </div>
 );
 
+const robotImage = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 160 160%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22%3E%3Cstop offset=%220%25%22 stop-color=%22%233f3fff%22 /%3E%3Cstop offset=%22100%25%22 stop-color=%22%23ff7ce8%22 /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%22100%25%22 height=%22100%25%22 rx=%2220%22 fill=%22%23fff%22 opacity=%220.05%22 /%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2260%22 fill=%22url(%23g)%22 opacity=%220.9%22 /%3E%3Cpath d=%22M56 82c0-14 0-20 12-20h24c12 0 12 6 12 20v18c0 14-6 20-12 20H68c-6 0-12-6-12-20V82z%22 fill=%22%23182a4b%22 /%3E%3Ccircle cx=%2270%22 cy=%2276%22 r=%225%22 fill=%22%23fff%22 /%3E%3Ccircle cx=%2290%22 cy=%2276%22 r=%225%22 fill=%22%23fff%22 /%3E%3Cpath d=%22M72 98h16v6H72z%22 fill=%22%23ffb8d2%22 /%3E%3Cpath d=%22M44 48h70v12h-70z%22 fill=%22%230A1343%22 opacity=%220.18%22 /%3E%3Cpath d=%22M40 52h10v20H40zM110 52h10v20h-10z%22 fill=%22%231e2d52%22 /%3E%3C/svg%3E';
+
 const SimulationView = ({
                             processes,
                             quantum,
@@ -92,9 +94,10 @@ const SimulationView = ({
                     <h2>Simulation</h2>
 
                     <img
-                        src="/robot.png"
+                        src="/Captura_de_pantalla_2026-03-24_215933-removebg-preview.png"
                         alt="robot"
                         className="simulation-robot"
+                        onError={(e) => { e.target.onerror = null; e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22%3E%3Ctext x=%2250%25%22 y=%2255%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%23f3f4f6%22%3E🤖%3C/text%3E%3C/svg%3E'; }}
                     />
 
                     <div className="simulation-controls">

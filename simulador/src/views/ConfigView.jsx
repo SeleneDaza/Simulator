@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './ConfigView.css';
 
+const robotImage = '/Captura_de_pantalla_2026-03-24_215933-removebg-preview.png';
+
 const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
@@ -88,7 +90,14 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
         <div className="layout-wrapper">
             <aside className="sidebar config-sidebar">
                 <div className="robot-container">
-                    <div className="robot-placeholder robot-img">🤖</div>
+                    <div className="robot-placeholder">
+                        <img
+                          src={robotImage}
+                          alt="Robot"
+                          className="robot-img"
+                          onError={(e) => { e.target.onerror = null; e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22%3E%3Ctext x=%2250%25%22 y=%2255%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%23f3f4f6%22%3E🤖%3C/text%3E%3C/svg%3E'; }}
+                        />
+                    </div>
                 </div>
                 <h1 className="title">VRR <span>vs</span> MLFQ <span>vs</span> SRTF</h1>
                 <p className="config-subtitle">SIMULATOR</p>
