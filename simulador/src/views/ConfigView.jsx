@@ -6,6 +6,8 @@ const robotImage = '/Captura_de_pantalla_2026-03-24_215933-removebg-preview.png'
 const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    const [confirmData, setConfirmData] = useState({ title: '', message: '', confirmText: 'Aceptar', cancelText: 'Cancelar', onConfirm: null });
     const [infoPage, setInfoPage] = useState(0);
     const [formData, setFormData] = useState({
         id: '',
@@ -35,6 +37,44 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
     const closeInfoModal = () => {
         setIsInfoModalOpen(false);
         setInfoPage(0);
+    };
+
+    const openConfirmModal = ({ title, message, confirmText = 'Aceptar', cancelText = 'Cancelar', onConfirm }) => {
+        setConfirmData({ title, message, confirmText, cancelText, onConfirm });
+        setIsConfirmModalOpen(true);
+    };
+
+    const closeConfirmModal = () => {
+        setIsConfirmModalOpen(false);
+        setConfirmData({ title: '', message: '', confirmText: 'Aceptar', cancelText: 'Cancelar', onConfirm: null });
+    };
+
+    const requestDeleteProcess = (id) => {
+        openConfirmModal({
+            title: 'Confirmar eliminación',
+            message: `¿Estás seguro de eliminar el proceso ${id}?`,
+            confirmText: 'Eliminar',
+            cancelText: 'Cancelar',
+            onConfirm: () => {
+                setProcesses((oldProcesses) => oldProcesses.filter(p => p.id !== id));
+                closeConfirmModal();
+            }
+        });
+    };
+
+    const handleStart = () => {
+        if (processes.length === 0) {
+            openConfirmModal({
+                title: 'No has agregado procesos',
+                message: 'Agrega al menos un proceso antes de iniciar la simulación.',
+                confirmText: 'Entendido',
+                cancelText: 'Cerrar',
+                onConfirm: closeConfirmModal
+            });
+            return;
+        }
+
+        onStart();
     };
 
     const nextInfoPage = () => {
@@ -110,7 +150,7 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
                     </div>
                     <div className='btn-group'>
                         <button onClick={addRandomProcess} className="btn-secondary">GENERATE RANDOM</button>
-                        <button onClick={onStart} className="btn-primary">START SIMULATION</button>
+                        <button onClick={handleStart} className="btn-primary">START SIMULATION</button>
                     </div>
                 </div>
             </aside>
@@ -130,9 +170,9 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
                             </div>
 
                             <button
-                                onClick={() => deleteProcess(p.id)}
+                                onClick={() => requestDeleteProcess(p.id)}
                                 className="delete-process-btn"
-                                title="Delete process"
+                                title="Eliminar proceso"
                             >
                                 🗑️
                             </button>
@@ -212,6 +252,19 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
                             ) : (
                                 <button onClick={closeInfoModal} className="btn-submit">Cerrar</button>
                             )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isConfirmModalOpen && (
+                <div className="modal-overlay" onClick={closeConfirmModal}>
+                    <div className="modal-content modal-confirm" onClick={(e) => e.stopPropagation()}>
+                        <h3 className="modal-title">{confirmData.title}</h3>
+                        <p className="confirm-message">{confirmData.message}</p>
+                        <div className="modal-buttons">
+                            <button className="btn-cancel" onClick={closeConfirmModal}>{confirmData.cancelText}</button>
+                            <button className="btn-submit" onClick={() => { confirmData.onConfirm && confirmData.onConfirm(); }}>{confirmData.confirmText}</button>
                         </div>
                     </div>
                 </div>

@@ -267,6 +267,10 @@ body::after {
 
   transition: none;
   box-shadow: none;
+
+  min-height: auto;
+  height: auto;
+  box-sizing: border-box;
 }
 
 .process-card:hover {
