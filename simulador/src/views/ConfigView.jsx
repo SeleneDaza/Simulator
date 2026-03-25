@@ -101,7 +101,7 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
                 </div>
                 <h1 className="title">VRR <span>vs</span> MLFQ <span>vs</span> SRTF</h1>
                 <p className="config-subtitle">SIMULATOR</p>
-                <button onClick={openInfoModal} className="info-btn" title="Información">ℹ️</button>
+                <button onClick={openInfoModal} className="info-btn" title="Información">!</button>
 
                 <div className="controls">
                     <div className="quantum">
