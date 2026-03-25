@@ -65,7 +65,6 @@ const App = () => {
   }, [isPlaying, clock, currentView, quantum, simulationSpeed]);
 
   const handleStartSimulation = () => {
-    if (processes.length === 0) return alert("Agrega procesos.");
     const getInitial = () => processes.map(p => {
       const proc = new Process({ pid: p.id, arrivalTime: p.arrival, burstTime: p.burst, ioRequestTime: p.ioRequestTime });
       proc.color = p.color;
