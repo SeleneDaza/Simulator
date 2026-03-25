@@ -32,6 +32,36 @@
   animation: slideInUp 1s ease-out 0.2s backwards;
 }
 
+.info-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: linear-gradient(145deg, rgba(99, 102, 241, 0.95), rgba(236, 72, 153, 0.95));
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 1.1rem;
+  color: #fff;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: grid;
+  place-items: center;
+  z-index: 10;
+}
+
+.info-btn:hover {
+  transform: scale(1.07);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.info-btn:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+}
+
 .controls {
   display: flex;
   flex-direction: column;
@@ -185,6 +215,49 @@
 .btn-submit {
   background: var(--air-blue, #6ea8ff);
   color: white;
+}
+
+.info-modal {
+  width: min(760px, 95vw);
+  max-height: 78vh;
+  overflow: hidden;
+  padding: 28px;
+}
+
+.info-content {
+  color: #b8c7e0;
+  line-height: 1.6;
+  min-height: 280px;
+  overflow: hidden;
+  font-size: 1.05rem;
+}
+
+.info-content p {
+  margin-bottom: 14px;
+}
+
+.info-content h4 {
+  color: white;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.modal-buttons button {
+  min-width: 110px;
+  padding: 12px 18px;
+  font-size: 1rem;
+}
+
+.info-content p {
+  margin-bottom: 10px;
 }
 
 /* PROCESS GRID */

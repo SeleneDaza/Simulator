@@ -3,6 +3,8 @@ import './ConfigView.css';
 
 const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+    const [infoPage, setInfoPage] = useState(0);
     const [formData, setFormData] = useState({
         id: '',
         arrival: 0,
@@ -22,6 +24,23 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
 
     const closeModal = () => {
         setIsModalOpen(false);
+    };
+
+    const openInfoModal = () => {
+        setIsInfoModalOpen(true);
+    };
+
+    const closeInfoModal = () => {
+        setIsInfoModalOpen(false);
+        setInfoPage(0);
+    };
+
+    const nextInfoPage = () => {
+        setInfoPage(prev => Math.min(prev + 1, 1));
+    };
+
+    const prevInfoPage = () => {
+        setInfoPage(prev => Math.max(prev - 1, 0));
     };
 
     const handleFormSubmit = (e) => {
@@ -71,8 +90,9 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
                 <div className="robot-container">
                     <div className="robot-placeholder robot-img">🤖</div>
                 </div>
-                <h1 className="title">RR <span>vs</span> MLFQ <span>vs</span> SRTF</h1>
+                <h1 className="title">VRR <span>vs</span> MLFQ <span>vs</span> SRTF</h1>
                 <p className="config-subtitle">SIMULATOR</p>
+                <button onClick={openInfoModal} className="info-btn" title="Información">ℹ️</button>
 
                 <div className="controls">
                     <div className="quantum">
@@ -145,6 +165,45 @@ const ConfigView = ({ processes, setProcesses, quantum, setQuantum, onStart }) =
                                 <button type="submit" className="btn-submit">Add</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {isInfoModalOpen && (
+                <div className="modal-overlay">
+                    <div className="modal-content info-modal">
+                        <h3 className="modal-title">Información del Simulador</h3>
+                        <div className="info-content">
+                            {infoPage === 0 && (
+                                <>
+                                    <h4>Página 1: Conceptos Básicos</h4>
+                                    <p><strong>Proceso:</strong> Una unidad de trabajo que requiere tiempo de CPU para ejecutarse. Cada proceso tiene un tiempo de llegada, ráfaga y opcionalmente una solicitud de I/O.</p>
+                                    <p><strong>Tiempo de Llegada (Arrival Time):</strong> Momento en que el proceso ingresa al sistema y está listo para ejecutarse.</p>
+                                    <p><strong>Tiempo de Ráfaga (Burst Time):</strong> Tiempo total de CPU necesario para completar el proceso.</p>
+                                    <p><strong>I/O:</strong> Punto en que el proceso se bloquea por entrada/salida.</p>
+                                    <p><strong>Quantum:</strong> Límite de tiempo para VRR antes de pasar al siguiente proceso.</p>
+                                </>
+                            )}
+                            {infoPage === 1 && (
+                                <>
+                                    <h4>Página 2: Algoritmos</h4>
+                                    <p><strong>Virtual Round Robin (VRR):</strong> Cada proceso recibe un quantum fijo. Si no termina, vuelve a la cola, permitiendo compartir CPU equitativamente.</p>
+                                    <p><strong>Shortest Remaining Time First (SRTF):</strong> Ejecuta siempre el proceso con menor tiempo restante.</p>
+                                    <p><strong>Multi-Level Feedback Queue (MLFQ):</strong> Tres colas de prioridad. Un proceso puede bajar de prioridad si consume mucho CPU, y subir si espera demasiado.</p>
+                                    <p><strong>Mediciones clave:</strong> tiempo de espera, tiempo de respuesta, tiempo de retorno y utilización.</p>
+                                </>
+                            )}
+                        </div>
+                        <div className="modal-buttons">
+                            {infoPage > 0 && (
+                                <button onClick={prevInfoPage} className="btn-secondary">Anterior</button>
+                            )}
+                            {infoPage < 1 ? (
+                                <button onClick={nextInfoPage} className="btn-primary">Siguiente</button>
+                            ) : (
+                                <button onClick={closeInfoModal} className="btn-submit">Cerrar</button>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
